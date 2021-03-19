@@ -1,439 +1,484 @@
 {
-  "fileTypes": [
-    "fbs"
-  ],
   "name": "Flatbuffers Schema",
+  "version": "https://google.github.io/flatbuffers/flatbuffers_grammar.html",
+  "scopeName": "source.flatbuffers",
+  "fileTypes": [ "fbs" ],
   "patterns": [
-    {
-      "include": "#comments"
-    },
-    {
-      "include": "#value"
-    },
-    {
-      "include": "#namespace-decl"
-    },
-    {
-      "include": "#attribute-decl"
-    },
-    {
-      "include": "#include-decl"
-    },
-    {
-      "include": "#enum-decl"
-    },
-    {
-      "include": "#union-decl"
-    },
-    {
-      "include": "#struct-decl"
-    },
-    {
-      "include": "#table-decl"
-    },
-    {
-      "include": "#root_type-decl"
-    },
-    {
-      "match": "\\b(attribute|include|file_identifier|file_extension)\\b",
-      "name": "keyword.control.flatbuffers"
-    }
+    { "include": "#comments" },
+    { "include": "#include_decl" },
+    { "include": "#namespace_decl" },
+    { "include": "#attribute_decl" },
+    { "include": "#enum_decl" },
+    { "include": "#union_decl" },
+    { "include": "#struct_decl" },
+    { "include": "#table_decl" },
+    { "include": "#root_decl" },
+    { "include": "#file_extension_decl" },
+    { "include": "#file_identifier_decl" },
+    { "include": "#rpc_decl" },
+    { "include": "#object" }
   ],
   "repository": {
-    "line-comment": {
-      "begin": "(?=//)",
-      "end": "\\n",
+    "comment_line": {
       "name": "comment.line.double-slash.flatbuffers",
+      "match": "(//)[^/](?:[^\\n]|.)*",
+      "captures": {
+        "1": { "name": "punctuation.definition.comment.flatbuffers" }
+      }
+    },
+    "comment_doc": {
       "patterns": [
         {
-          "begin": "(?<!/)(?=///[^/])",
-          "end": "(?=\\n)",
-          "name": "meta.documentation.flatbuffers"
+          "name": "comment.block.documentation.flatbuffers",
+          "match": "^\\s*(///)(?:[^\\n]|.)*",
+          "captures": {
+            "1": { "name": "punctuation.definition.comment.flatbuffers" }
+          }
+        },
+        {
+          "name": "invalid.illegal.flatbuffers",
+          "match": "(///)(?:[^\\n]|.)*"
         }
       ]
     },
-    "block-comment": {
-      "begin": "(?=/\\*)",
-      "end": "(?<!/)\\*/",
-      "name": "comment.block.flatbuffers"
-    },
-    "escape-chars": {
-      "match": "\\\\(?:['\"\\?\\\\abfnrtv]|[0-7]{1,3}|x[\\da-fA-F]+|u[\\da-fA-F]{4}|U[\\da-fA-F]{8})",
-      "name": "constant.character.escape.flatbuffers"
-    },
-    "invalid-escape-chars": {
-      "match": "\\\\(?:[^'\"\\?\\\\abfnrtvxuU0-7]|x[^\\da-fA-F]|u[\\da-fA-F]{0,3}[^\\da-fA-F]|U[\\da-fA-F]{0,7}[^\\da-fA-F])",
-      "name": "invalid.illegal.unknown-escape.flatbuffers"
-    },
-    "string": {
-      "begin": "\"",
+    "comment_block": {
+      "name": "comment.block.flatbuffers",
+      "begin": "(?=\\/\\*)",
       "beginCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.begin.flatbuffers"
-        }
+        "0": { "name": "punctuation.definition.comment.begin.flatbuffers" }
       },
-      "end": "\"",
+      "end": "(?<!\\/)\\*\\/",
       "endCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.end.flatbuffers"
-        }
-      },
-      "name": "string.quoted.double.flatbuffers",
-      "patterns": [
-        {
-          "include": "#escape-chars"
-        },
-        {
-          "include": "#invalid-escape-chars"
-        }
-      ]
-    },
-    "scalar": {
-      "patterns": [
-        {
-          "match": "\\b(true|false)\\b",
-          "name": "constant.language.flatbuffers"
-        },
-        {
-          "include": "#string"
-        },
-        {
-          "include": "#numeric"
-        }
-      ]
-    },
-    "object": {
-      "begin": "{",
-      "end": "(?<=})",
-      "patterns": [
-        {
-          "include": "#comments"
-        },
-        {
-          "include": "#name"
-        },
-        {
-          "begin": ":",
-          "end": ",|}",
-          "patterns": [
-            {
-              "include": "#comments"
-            },
-            {
-              "include": "#value"
-            },
-            {
-              "include": "#name"
-            }
-          ]
-        }
-      ]
-    },
-    "typename": {
-      "patterns": [
-        {
-          "match": "(\\.)?\\s*\\b(bool|byte|ubyte|short|ushort|int|uint|float|long|ulong|double|string)\\b",
-          "captures": {
-            "1": {
-              "name": "invalid.illegal.flatbuffers"
-            },
-            "2": {
-              "name": "storage.type.flatbuffers"
-            }
-          }
-        },
-        {
-          "match": "\\b(?!(enum|namespace|union|struct|table|include|true|false|bool|byte|ubyte|short|ushort|int|uint|float|long|ulong|double|string)\\W)([_a-zA-Z]\\w*)\\s*(?=\\.)",
-          "captures": {
-            "2": {
-              "name": "entity.name.section.flatbuffers"
-            }
-          }
-        },
-        {
-          "match": "\\b(?!(enum|namespace|union|struct|table|include|true|false|bool|byte|ubyte|short|ushort|int|uint|float|long|ulong|double|string)\\W)([_a-zA-Z]\\w*)",
-          "name": "entity.name.type.flatbuffers"
-        }
-      ]
-    },
-    "name": {
-      "match": "\\b(?!(enum|namespace|union|struct|table|include|true|false|bool|byte|ubyte|short|ushort|int|uint|float|long|ulong|double|string)\\W)([_a-zA-Z]\\w*)\\b",
-      "name": "entity.name.tag.flatbuffers"
-    },
-    "packname": {
-      "match": "\\b(?!(enum|namespace|union|struct|table|include|true|false|bool|byte|ubyte|short|ushort|int|uint|float|long|ulong|double|string)\\W)([_a-zA-Z]\\w*)\\b",
-      "name": "entity.name.section.flatbuffers"
-    },
-    "numeric": {
-      "match": "(-)?\\d+(\\.\\d+)?",
-      "name": "constant.numeric.flatbuffers"
+        "0": { "name": "punctuation.definition.comment.end.flatbuffers" }
+      }
     },
     "comments": {
       "patterns": [
-        {
-          "include": "#line-comment"
-        },
-        {
-          "include": "#block-comment"
-        }
+        { "include": "#comment_line" },
+        { "include": "#comment_doc" },
+        { "include": "#comment_block" }
       ]
     },
-    "value": {
-      "patterns": [
-        {
-          "include": "#scalar"
-        },
-        {
-          "include": "#object"
-        }
-      ]
+    "escape_chars": {
+      "name": "constant.character.escape.flatbuffers",
+      "match": "\\\\(?:['\"\\?\\\\abfnrtv]|[0-7]{1,3}|x[\\da-fA-F]+|u[\\da-fA-F]{4}|U[\\da-fA-F]{8})"
     },
-    "struct_field_end": {
-      "begin": "\\b(:)",
-      "end": ";",
+    "invalid_escape_chars": {
+      "name": "invalid.illegal.unknown-escape.flatbuffers",
+      "match": "\\\\(?:[^'\"\\?\\\\abfnrtvxuU0-7]|x[^\\da-fA-F]|u[\\da-fA-F]{0,3}[^\\da-fA-F]|U[\\da-fA-F]{0,7}[^\\da-fA-F])"
+    },
+    "include_decl": {
+      "name": "meta.include.flatbuffers",
+      "begin": "^\\b(?:include)\\b",
+      "beginCaptures": {
+        "0": { "name": "keyword.control.flatbuffers" }
+      },
       "patterns": [
+        { "include": "#comments" },
+        { "include": "#const_string_strictly" },
         {
-          "include": "#comments"
-        },
-        {
-          "include": "#typename"
-        },
-        {
-          "match": "[\\d=]+",
-          "name": "invalid.illegal.flatbuffers"
-        },
-        {
-          "begin": "\"",
-          "end": "\"",
           "name": "invalid.illegal.flatbuffers",
-          "patterns": [
-            {
-              "match": "(\\\\\\\\)|\\\\\""
-            }
-          ]
-        },
-        {
-          "include": "#metadata"
+          "match": "\\b\\w+\\b"
         }
-      ]
+      ],
+      "end": ";"
     },
-    "table_field_end": {
-      "begin": "\\b(:)",
-      "end": ";",
-      "patterns": [
-        {
-          "include": "#comments"
-        },
-        {
-          "include": "#typename"
-        },
-        {
-          "begin": "=",
-          "end": "(?=;|\\()",
-          "patterns": [
-            {
-              "include": "#value"
-            },
-            {
-              "include": "#name"
-            }
-          ]
-        },
-        {
-          "include": "#metadata"
-        }
-      ]
-    },
-    "metadata": {
-      "begin": "\\(",
-      "end": "\\)",
-      "patterns": [
-        {
-          "include": "#comments"
-        },
-        {
-          "match": "\\b(id|deprecated|required|original_order|force_align|bit_flags|nested_flatbuffer|key)\\b",
-          "name": "keyword.control.flatbuffers"
-        },
-        {
-          "include": "#name"
-        },
-        {
-          "include": "#scalar"
-        }
-      ]
-    },
-    "namespace-decl": {
-      "begin": "\\b(namespace)\\b",
+    "namespace_decl": {
+      "name": "meta.namespace.flatbuffers",
+      "begin": "^\\b(?:namespace)\\b",
       "beginCaptures": {
-        "1": {
-          "name": "keyword.control.flatbuffers"
-        }
+        "0": { "name": "keyword.control.flatbuffers" }
       },
-      "end": ";",
       "patterns": [
+        { "include": "#comments" },
+        { "include": "#identif_wrong" },
+        { "include": "#identif_type" },
         {
-          "include": "#comments"
-        },
+          "name": "invalid.illegal.flatbuffers",
+          "match": "\\b\\w+\\b"
+        }
+      ],
+      "end": ";"
+    },
+    "attribute_decl": {
+      "name": "meta.attribute.flatbuffers",
+      "begin": "^\\b(?:attribute)\\b",
+      "beginCaptures": {
+        "0": { "name": "keyword.control.flatbuffers" }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#const_string_strictly" }
+      ],
+      "end": ";"
+    },
+    "enum_decl": {
+      "name": "meta.enum.flatbuffers",
+      "begin": "^(enum)\\s+(\\w+)\\s*(?:\\:\\s*(\\w*))?\\s*{?",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.flatbuffers" },
+        "2": { "patterns": [
+          { "include": "#identif_wrong" },
+          { "include": "#identif_type" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "3": { "patterns": [
+          { "include": "#type_int_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#enumitem_decl" }
+      ],
+      "end": "}"
+    },
+    "enumitem_decl": {
+      "name": "meta.enumitem.flatbuffers",
+      "match": "(\\w+)\\s*(?:(=)\\s*(\\w+))?,?",
+      "captures": {
+        "1": { "patterns": [
+          { "include": "#identif_wrong" },
+          { "include": "#identif_tag" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "2": { "name": "keyword.operator.assignment.flatbuffers" },
+        "3": { "patterns": [
+          { "include": "#const_int_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] }
+      }
+    },
+    "union_decl": {
+      "name": "meta.union.flatbuffers",
+      "begin": "^(union)\\s+(\\w+)\\s*{?",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.flatbuffers" },
+        "2": { "patterns": [
+          { "include": "#identif_wrong" },
+          { "include": "#identif_type" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+      ] }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#unionitem_decl" }
+      ],
+      "end": "}"
+    },
+    "unionitem_decl": {
+      "name": "meta.unionitem.flatbuffers",
+      "match": "(\\w+)\\s*,?",
+      "captures": {
+        "1": { "patterns": [
+          { "include": "#identif_wrong" },
+          { "include": "#identif_type" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] }
+      }
+    },
+    "struct_decl": {
+      "name": "meta.struct.flatbuffers",
+      "begin": "^(struct)\\s+(\\w+)\\s*(?:\\s*\\(([\\w\\s,:\"]+)\\)\\s*)?{?",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.flatbuffers" },
+        "2": { "patterns": [
+          { "include": "#identif_wrong" },
+          { "include": "#identif_type" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "3": { "include": "#struct_metadata" }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#structitem_decl" }
+      ],
+      "end": "}"
+    },
+    "struct_metadata": {
+      "name": "meta.struct_metadata.struct",
+      "patterns": [
+        { "include": "#comments" },
         {
-          "include": "#packname"
+          "name": "keyword.control.flatbuffers",
+          "match": "\\b(\\w+)\\b"
         }
       ]
     },
-    "enum-decl": {
-      "begin": "\\b(enum)\\b",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.control.flatbuffers"
-        }
-      },
-      "end": "(?<=})",
+    "structitem_decl": {
+      "name": "meta.structitem.flatbuffers",
+      "match": "^\\s*(\\w+)\\s*:\\s*(?:\\b(bool)\\b\\s*(?:(=)\\s*(\\w+))?|\\b(string)\\b|([.\\w]+)\\s*(?:(=)\\s*([-+.\\w]+))?|\\[\\s*([.\\w]+)\\s*(?::\\s*(\\w+)\\s*)?\\])(?:\\s*\\(([\\w\\s,:]+)\\))?",
+      "captures": {
+        "1": { "patterns": [
+          { "include": "#identif_wrong" },
+          { "include": "#identif_tag" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "2": { "name": "keyword.control.flatbuffers" },
+        "3": { "name": "keyword.operator.assignment.flatbuffers" },
+        "4": { "patterns": [
+          { "include": "#const_bool_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "5": { "name": "keyword.control.flatbuffers" },
+        "6": { "patterns": [
+          { "include": "#type_int_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b(?:byte|ubyte|short|ushort|int|uint|long|ulong)\\b"
+          },
+          { "include": "#type_float_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b(?:float|double)\\b"
+          },
+          {
+            "name": "entity.name.type.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "7": { "name": "keyword.operator.assignment.flatbuffers" },
+        "8": { "patterns": [
+          { "include": "#const_int_strictly" },
+          { "include": "#const_float_strictly" },
+          { "include": "#identif_wrong" },
+          { "include": "#identif_tag" }
+        ] },
+        "9": { "patterns": [
+          { "include": "#type_int_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b(?:byte|ubyte|short|ushort|int|uint|long|ulong)\\b"
+          },
+          { "include": "#type_float_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b(?:float|double)\\b"
+          },
+          {
+            "name": "entity.name.type.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "10": { "patterns": [
+          { "include": "#const_int_strictly" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] },
+        "11": { "include": "#structitem_metadata" }
+      }
+    },
+    "structitem_metadata": {
+      "name": "meta.structitem_metadata.struct",
       "patterns": [
+        { "include": "#comments" },
         {
-          "include": "#comments"
-        },
-        {
-          "include": "#typename"
-        },
-        {
-          "include": "#metadata"
-        },
-        {
-          "begin": "{",
-          "end": "}",
-          "patterns": [
-            {
-              "include": "#comments"
-            },
-            {
-              "include": "#name"
-            },
-            {
-              "include": "#numeric"
-            }
-          ]
+          "name": "keyword.control.flatbuffers",
+          "match": "\\b(id|deprecated|required|original_order|force_align|bit_flags|nested_flatbuffer|key)\\b"
         }
       ]
     },
-    "union-decl": {
-      "begin": "\\b(union)\\b",
+    "table_decl": {
+      "name": "meta.table.flatbuffers",
+      "begin": "^(table)\\s+(\\w+)\\s*{?",
       "beginCaptures": {
-        "1": {
-          "name": "keyword.control.flatbuffers"
-        }
+        "1": { "name": "keyword.control.flatbuffers" },
+        "2": { "patterns": [
+          { "include": "#identif_wrong" },
+          { "include": "#identif_type" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] }
       },
-      "end": "(?<=})",
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#structitem_decl" }
+      ],
+      "end": "}"
+    },
+    "tableitem_decl": {
+
+    },
+    "root_decl": {
+      "name": "meta.root_type.flatbuffers",
+      "begin": "^\\b(?:root_type)\\b",
+      "beginCaptures": {
+        "0": { "name": "keyword.control.flatbuffers" }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#identif_wrong" },
+        { "include": "#identif_type" },
+        {
+          "name": "invalid.illegal.flatbuffers",
+          "match": "\\b\\w+\\b"
+        }
+      ],
+      "end": ";"
+    },
+    "file_extension_decl": {
+      "name": "meta.file_extension.flatbuffers",
+      "begin": "^\\b(?:file_extension)\\b",
+      "beginCaptures": {
+        "0": { "name": "keyword.control.flatbuffers" }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        {
+          "name": "string.quoted.double.flatbuffers",
+          "match": "\"\\w+\""
+        },
+        {
+          "name": "invalid.illegal.flatbuffers",
+          "match": "\\b\\w+\\b"
+        }
+      ],
+      "end": ";"
+    },
+    "file_identifier_decl": {
+      "name": "meta.file_identifier.flatbuffers",
+      "begin": "^\\b(?:file_identifier)\\b",
+      "beginCaptures": {
+        "0": { "name": "keyword.control.flatbuffers" }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        {
+          "name": "string.quoted.double.flatbuffers",
+          "match": "\"\\w{4}\""
+        },
+        {
+          "name": "invalid.illegal.flatbuffers",
+          "match": "\\b\\w+\\b"
+        }
+      ],
+      "end": ";"
+    },
+    "rpc_decl": {
+      "name": "meta.rpc_service.flatbuffers",
+      "begin": "^(rpc_service)\\s+(\\w+)\\s+{?",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.flatbuffers" },
+        "2": { "patterns": [
+          { "include": "#comments" },
+          { "include": "#identif_wrong" },
+          { "include": "#identif_type" },
+          {
+            "name": "invalid.illegal.flatbuffers",
+            "match": "\\b\\w+\\b"
+          }
+        ] }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#identif_wrong" },
+        { "include": "#identif_type" },
+        {
+          "name": "invalid.illegal.flatbuffers",
+          "match": "\\b\\w+\\b"
+        }
+      ],
+      "end": "}"
+    },
+    "type_int_strictly": {
+      "name": "keyword.control.flatbuffers",
+      "match": "\\b(?:int8|uint8|int16|uint16|int32|uint32|int64|uint64)\\b",
+      "_match_all": "\\b(?:byte|ubyte|short|ushort|int|uint|long|ulong|int8|uint8|int16|uint16|int32|uint32|int64|uint64)\\b"
+    },
+    "type_float_strictly": {
+      "name": "keyword.control.flatbuffers",
+      "match": "\\b(?:float32|float64)\\b",
+      "_match_all": "\\b(?:float|double|float32|float64)\\b"
+    },
+    "identif_wrong": {
+      "name": "invalid.illegal.flatbuffers",
+      "match": "\\b(?:byte|ubyte|short|ushort|int|uint|long|ulong|int8|uint8|int16|uint16|int32|uint32|int64|uint64|float|double|float32|float64|bool|string|true|false|nan|inf|infinity|include|namespace|attribute|table|struct|enum|union|root_type|rpc_service|file_extension|file_identifier)\\b"
+    },
+    "identif_type": {
+      "name": "entity.name.type.flatbuffers",
+      "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+    },
+    "identif_tag": {
+      "name": "entity.name.tag.flatbuffers",
+      "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+    },
+    "const_bool_strictly": {
+      "name": "constant.numeric.flatbuffers",
+      "match": "\\b(false|true)\\b"
+    },
+    "const_int_strictly": {
       "patterns": [
         {
-          "include": "#comments"
+          "name": "constant.numeric.flatbuffers",
+          "match": "\\b[-+]?[[:digit:]]+\\b"
         },
         {
-          "include": "#typename"
-        },
-        {
-          "include": "#metadata"
-        },
-        {
-          "begin": "{",
-          "end": "}",
-          "patterns": [
-            {
-              "include": "#comments"
-            },
-            {
-              "include": "#typename"
-            }
-          ]
+          "name": "constant.numeric.flatbuffers",
+          "match": "\\b[-+]?0[xX][[:xdigit:]]+\\b"
         }
       ]
     },
-    "struct-decl": {
-      "begin": "\\b(struct)\\b",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.control.flatbuffers"
-        }
-      },
-      "end": "(?<=})",
+    "const_float_strictly": {
       "patterns": [
         {
-          "include": "#comments"
+          "name": "constant.numeric.flatbuffers",
+          "match": "\\b[-+]?(nan|inf|infinity)\\b"
         },
         {
-          "include": "#typename"
+          "name": "constant.numeric.flatbuffers",
+          "match": "[-+]?(([.][[:digit:]]+)|([[:digit:]]+[.][[:digit:]]*)|([[:digit:]]+))([eE][-+]?[[:digit:]]+)?"
         },
         {
-          "include": "#metadata"
-        },
-        {
-          "begin": "{",
-          "end": "}",
-          "patterns": [
-            {
-              "include": "#comments"
-            },
-            {
-              "include": "#name"
-            },
-            {
-              "include": "#struct_field_end"
-            }
-          ]
+          "name": "constant.numeric.flatbuffers",
+          "match": "[-+]?0[xX](([.][[:xdigit:]]+)|([[:xdigit:]]+[.][[:xdigit:]]*)|([[:xdigit:]]+))([pP][-+]?[[:digit:]]+)"
         }
       ]
     },
-    "table-decl": {
-      "begin": "\\b(table)\\b",
+    "const_string_strictly": {
+      "name": "string.quoted.double.flatbuffers",
+      "begin": "\"",
       "beginCaptures": {
-        "1": {
-          "name": "keyword.control.flatbuffers"
-        }
+        "0": { "name": "punctuation.definition.string.begin.flatbuffers" }
       },
-      "end": "(?<=})",
       "patterns": [
-        {
-          "include": "#comments"
-        },
-        {
-          "include": "#typename"
-        },
-        {
-          "include": "#metadata"
-        },
-        {
-          "begin": "{",
-          "end": "}",
-          "patterns": [
-            {
-              "include": "#comments"
-            },
-            {
-              "include": "#name"
-            },
-            {
-              "include": "#table_field_end"
-            }
-          ]
-        }
-      ]
-    },
-    "root_type-decl": {
-      "begin": "\\b(root_type)\\b",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.control.flatbuffers"
-        }
-      },
-      "end": ";",
-      "patterns": [
-        {
-          "include": "#comments"
-        },
-        {
-          "include": "#typename"
-        }
-      ]
+        { "include": "#escape_chars" },
+        { "include": "#invalid_escape_chars" }
+      ],
+      "end": "\"",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.flatbuffers" }
+      }
     }
-  },
-  "scopeName": "source.flatbuffers"
+  }
 }

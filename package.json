@@ -1,11 +1,12 @@
 {
   "name": "flatbuffers",
   "description": "Flatbuffers Schema highlighter for Visual Studio Code",
-  "version": "0.1.0",
-  "publisher": "gaborv",
+  "version": "0.2.0",
+  "publisher": "yurablok",
   "author": {
-    "name": "Gabor Varga"
+    "name": "Yurii Blok"
   },
+  "license": "BSL-1.0",
   "icon": "images/fpl_logo_small.png",
   "galleryBanner": {
     "color": "#232323",
@@ -14,19 +15,7 @@
   "engines": {
     "vscode": "^1.0.0"
   },
-  "categories": [
-    "Languages"
-  ],
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gaborv/FlatbuffersSchema"
-  },
-  "bugs": {
-    "url": "https://github.com/gaborv/FlatbuffersSchema/issues"
-  },
   "contributes": {
-    "configuration": { },
     "languages": [
       {
         "id": "flatbuffers",
@@ -44,9 +33,6 @@
         "configuration": "./FlatbuffersSchema.configuration.json"
       }
     ],
-    "commands": [ ],
-    "outputChannels": [ ],
-    "keybindings": [ ],
     "grammars": [
       {
         "language": "flatbuffers",
@@ -54,5 +40,12 @@
         "path": "./syntaxes/flatbuffers.json"
       }
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yurablok/VSCode-Flatbuffers-Highlighter"
+  },
+  "bugs": {
+    "url": "https://github.com/yurablok/VSCode-Flatbuffers-Highlighter/issues"
   }
 }
